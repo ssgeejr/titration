@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Copyright (C) 2005  Steve Gee
+     ioexcept@gmail.com
+     This program is free software; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License
+     as published by the Free Software Foundation; either version 2
+     of the License, or (at your option) any later version.
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+-->
+<project name="Titration" default="jar">
+
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX SYSTEM XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+    <property name="build.compiler"       value="jikes"/>
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX PROJECT XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+    <property name="ROOT.DIR"        	  value="/usr/local/beans/titration" />
+    <property name="JAR.FILE"        	  value="${ROOT.DIR}/titration.jar" />
+    <property name="JAVA.SRC"        	  value="${ROOT.DIR}/src" />
+    <property name="BUILD.ROOT"        	  value="${ROOT.DIR}/jar.classes" />
+    <property name="IMAGE.ROOT"        	  value="${ROOT.DIR}/src/com/gsoft/titration/client" />
+    <property name="IMAGE.HOME"        	  value="${ROOT.DIR}/jar.classes/com/gsoft/titration/client" />
+
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX CLEAN XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+    <target name="clean">
+        <delete dir="${BUILD.ROOT}" />
+        <delete file="${JAR.FILE}" />
+    </target>
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX PREPARE XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+    <target name="prepare" depends="clean">
+        <mkdir dir="${BUILD.ROOT}" />
+    </target>
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX COMPILE XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+    <target name="compile" depends="prepare">
+    	<javac srcdir="${JAVA.SRC}"
+         destdir="${BUILD.ROOT}"
+         includes="*/**"
+  	/>
+	<copy file="${IMAGE.ROOT}\login.jpg" 	todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\about.gif" 	todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\comment.gif" 	todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\error.gif" 	todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\info.gif" 	todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\changePW.gif" todir="${IMAGE.HOME}"/>
+	<copy file="${IMAGE.ROOT}\report.gif" todir="${IMAGE.HOME}"/>
+	<delete dir="${BUILD.ROOT}\package cache"/>
+    </target>
+<!--  XXXXXXXXXXXXXXXXXXXXXXXXXX JAR XXXXXXXXXXXXXXXXXXXXXXXXXX  -->
+   <target name="jar" depends="compile">
+        <jar
+        	jarfile="${JAR.FILE}"
+           	basedir="${BUILD.ROOT}">
+	        <manifest>
+	          <attribute name="Built-By" value="Steve Gee"/>
+	          <attribute name="user-Email" value="ioexcept@yahoo.com"/>
+	          <attribute name="Main-Class" value="com.gsoft.titration.client.Titration"/>
+	        </manifest>
+	</jar>
+   </target>
+</project>

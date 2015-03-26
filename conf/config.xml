@@ -1,0 +1,267 @@
+<micromgr>
+	<database>
+		<driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://tao/cerberus</url>
+        <username>cerberus</username>
+        <password>micromgr</password>
+	</database>
+	<sql>
+	<getNextNum>SELECT NEXTNUM FROM NEXTNUM WHERE TABLENAME = ?</getNextNum>
+	<updateNextNum>update NEXTNUM set NEXTNUM = (NEXTNUM+1) WHERE TABLENAME = ?</updateNextNum>
+	<login>SELECT USERID,ACTUALNAME
+            FROM
+            USERS
+            WHERE
+            USERNAME = ?
+            AND PASSWORD = ?</login>
+	<userProjects>select
+            a.PROJECTID as pid,
+            a.PROJECTNAME as pname,
+            a.DESCRIPTION as pdesc,
+            a.REQUESTOR as preq,
+             DATE_FORMAT(a.REQUESTDATE, '%m-%d-%Y') as preqdate,
+             DATE_FORMAT(a.STARTDATE, '%m-%d-%Y') as pstart,
+             DATE_FORMAT(a.COMPLETIONDATE, '%m-%d-%Y') as pcomplete,
+            a.STATUSID as pstatus,
+            b.PROJECTHOURS as phours,
+            b.PROJECTORDER as ppriority,
+	    	b.COMPLETEDPCT as completedpct
+            from
+            PROJECTS a,
+            USERPROJECTS b
+            WHERE
+            b.projectid = a.projectid
+            and b.userid = ?
+            order by b.PROJECTORDER</userProjects>
+	<userProjectsFiltered>select
+            a.PROJECTID as pid,
+            a.PROJECTNAME as pname,
+            a.DESCRIPTION as pdesc,
+            a.REQUESTOR as preq,
+            DATE_FORMAT(a.REQUESTDATE, '%m-%d-%Y') as preqdate,
+            DATE_FORMAT(a.STARTDATE, '%m-%d-%Y') as pstart,
+            DATE_FORMAT(a.COMPLETIONDATE, '%m-%d-%Y') as pcomplete,
+            a.STATUSID as pstatus,
+            b.PROJECTHOURS as phours,
+            b.PROJECTORDER as ppriority,
+	    b.COMPLETEDPCT as completedpct
+            from
+            PROJECTS a,
+            USERPROJECTS b
+            WHERE
+            b.projectid = a.projectid
+            and b.userid = ?
+            and a.STATUSID = ?
+            order by b.PROJECTORDER</userProjectsFiltered>
+	<alterProjectPriority>update
+            USERPROJECTS
+            set PROJECTORDER = ?
+            where PROJECTID = ?
+            and USERID = ?</alterProjectPriority>
+	<validateProjectName>select
+            PROJECTID
+            FROM PROJECTS
+            where PROJECTNAME = ?</validateProjectName>
+	<saveNewProject>insert
+            into PROJECTS(PROJECTID,PROJECTNAME,DESCRIPTION,REQUESTOR,REQUESTDATE,STARTDATE,COMPLETIONDATE,STATUSID,HOURS,PRIORITY)
+            values(?,?,?,?,?,?,?,?,0,0)</saveNewProject>
+	<assignNewPrjToUser>insert
+        	into USERPROJECTS (PROJECTID,USERID,PROJECTORDER,COMPLETEDPCT,PROJECTHOURS)
+        	values(?,?,?,?,?)</assignNewPrjToUser>
+	<assignNewPrjToAdmin>insert
+            into USERPROJECTS (PROJECTID,USERID,PROJECTORDER,COMPLETEDPCT)
+            values(?,0,0,0)</assignNewPrjToAdmin>
+	<updateExistingPrj>update
+            PROJECTS
+            set
+            STARTDATE = ?,
+            COMPLETIONDATE = ?,
+            STATUSID = ?
+            WHERE
+            PROJECTID = ?</updateExistingPrj>
+	<addNotes>insert
+           into PROJECTNOTES (NOTEID,PROJECTID,USERID,COMMENT,COMMENTDATE)
+           values(?,?,?,?,?)</addNotes>
+	<fetchNotes>select
+           b.ACTUALNAME as UNAME,
+           a.COMMENT as CMNT,
+           DATE_FORMAT(a.COMMENTDATE, '%m-%d-%Y') as CDATE
+           FROM
+           PROJECTNOTES a,
+           USERS b
+           where
+           PROJECTID = ?
+           and b.USERID = a.USERID
+           order by NOTEID desc</fetchNotes>
+	<fetchUserList>SELECT
+           USERID,
+           USERNAME,
+           PASSWORD,
+           ACTUALNAME
+           FROM
+           USERS
+           WHERE
+           USERID > 0
+           ORDER BY
+           ACTUALNAME</fetchUserList>
+	<fetchAssingedProjects>SELECT
+	        A.PROJECTID AS PID,
+	        A.PROJECTNAME AS PNAME
+	        FROM
+	        PROJECTS A,
+	        USERPROJECTS B
+	        WHERE
+	        A.PROJECTID = B.PROJECTID
+	        AND B.USERID = ?
+	        ORDER BY
+	        PROJECTNAME</fetchAssingedProjects>
+	<fetchAllProjects>SELECT
+	        PROJECTID as pid,
+	        PROJECTNAME as pname
+	        FROM
+	        PROJECTS</fetchAllProjects>
+	<cleanUserProjects>delete
+	        from
+	        USERPROJECTS
+	        WHERE
+	        USERID = ?
+			and PROJECTID = ?</cleanUserProjects>
+	<saveUserProjects>INSERT
+	        INTO
+	        USERPROJECTS (USERID,PROJECTID,PROJECTORDER,COMPLETEDPCT)
+	        VALUES(?,?,?,0)</saveUserProjects>
+	<checkNewUser>SELECT
+	        USERNAME
+	        FROM USERS
+	        WHERE USERNAME = ?</checkNewUser>
+	<saveNewUser>INSERT
+	        INTO
+	        USERS (USERID,USERNAME,PASSWORD,ACTUALNAME,PREFEREDNAME)
+	        VALUES(?,?,?,?,'')</saveNewUser>
+	<resetPassword>UPDATE
+            USERS
+            SET PASSWORD = ?
+            WHERE USERID = ?</resetPassword>
+	<resetValidPassword>UPDATE
+            USERS
+            SET PASSWORD = ?
+            WHERE USERID = ?
+            AND PASSWORD = ?</resetValidPassword>
+	<getUserProjectCount>SELECT
+            max(PROJECTORDER) + 1 AS newPriority
+            FROM
+            USERPROJECTS
+            WHERE USERID = ?</getUserProjectCount>
+	<fetchStatusMap>SELECT
+            STATUS
+            FROM PROJECTSTATUS
+            ORDER BY STATUSID</fetchStatusMap>
+	<updateProjectPctComplete>update
+            USERPROJECTS
+            set
+            COMPLETEDPCT = ?,
+            PROJECTHOURS = ?
+            WHERE
+            PROJECTID = ?
+            and USERID = ?</updateProjectPctComplete>
+	<userMasterList>SELECT
+            USERID,
+            ACTUALNAME
+            FROM
+            USERS
+            WHERE
+            USERID > 0
+            ORDER BY ACTUALNAME</userMasterList>
+	<userProjectsDetail>SELECT
+            A.PROJECTID AS PID,
+            A.PROJECTORDER AS PORDER,
+            A.COMPLETEDPCT AS PCMPT,
+            A.PROJECTHOURS AS PCHOURS,
+            B.ACTUALNAME AS UNAME,
+            C.PROJECTNAME AS PNAME,
+            D.STATUS AS PSTAT
+            FROM
+            USERPROJECTS A,
+            USERS B,
+            PROJECTS C,
+            PROJECTSTATUS D
+            WHERE
+            A.USERID = ?
+            AND B.USERID = A.USERID
+            AND A.PROJECTID = C.PROJECTID
+            AND D.STATUSID = C.STATUSID
+            ORDER BY A.PROJECTORDER</userProjectsDetail>
+	<projectDevs>SELECT
+            A.COMPLETEDPCT AS CMPPCT,
+            A.PROJECTHOURS AS CMPHOURS,
+            B.ACTUALNAME AS ANAME,
+            A.PROJECTORDER AS PORDER
+            FROM
+            USERPROJECTS A,
+            USERS B
+            WHERE
+            A.PROJECTID = ?
+            AND A.USERID > 0
+            AND B.USERID = A.USERID</projectDevs>
+	<masterProjectList>SELECT
+            PROJECTID AS PID,
+            PROJECTNAME AS PNAME,
+            REQUESTOR AS PREQ,
+            DATE_FORMAT(REQUESTDATE , '%m-%d-%Y')AS REQD,
+            DATE_FORMAT(STARTDATE, '%m-%d-%Y') AS SDATE,
+            DATE_FORMAT(COMPLETIONDATE, '%m-%d-%Y') AS CDATE,
+            STATUSID AS PSTAT
+            FROM
+            PROJECTS
+            ORDER BY PROJECTNAME</masterProjectList>
+	<fetchUserItem>SELECT
+           USERID,
+           USERNAME,
+           PASSWORD,
+           ACTUALNAME
+           FROM
+           USERS
+           WHERE
+           USERID = ?</fetchUserItem>
+	<sortedUserProjects>select
+            a.PROJECTID as pid,
+            a.PROJECTNAME as pname,
+            a.DESCRIPTION as pdesc,
+            a.REQUESTOR as preq,
+             DATE_FORMAT(a.REQUESTDATE, '%m-%d-%Y') as preqdate,
+             DATE_FORMAT(a.STARTDATE, '%m-%d-%Y') as pstart,
+             DATE_FORMAT(a.COMPLETIONDATE, '%m-%d-%Y') as pcomplete,
+            a.STATUSID as pstatus,
+            b.PROJECTHOURS as phours,
+            b.PROJECTORDER as ppriority,
+	    b.COMPLETEDPCT as completedpct
+            from
+            PROJECTS a,
+            USERPROJECTS b
+            WHERE
+            b.projectid = a.projectid
+            and b.userid = ?
+            order by a.PROJECTNAME</sortedUserProjects>
+	<setNewPriority>update
+            USERPROJECTS
+            set PROJECTORDER = ?
+            where PROJECTORDER = ?
+            and USERID = ?</setNewPriority>
+	<shiftPriorityDown><![CDATA[UPDATE
+            USERPROJECTS
+            SET
+            PROJECTORDER = (PROJECTORDER - 1)
+            WHERE
+            USERID = ?
+            AND PROJECTORDER > ?
+            AND PROJECTORDER <= ?]]></shiftPriorityDown>
+	<shiftPriorityUp><![CDATA[UPDATE
+            USERPROJECTS
+            SET
+            PROJECTORDER = (PROJECTORDER + 1)
+            WHERE
+            USERID = ?
+            AND PROJECTORDER < ?
+            AND PROJECTORDER >= ?]]></shiftPriorityUp>
+	</sql>
+</micromgr>

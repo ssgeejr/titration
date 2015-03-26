@@ -1,0 +1,71 @@
+1.3.2 is entirely a client-request release.  
+
+What's new:
+**Best new Feature**
+You can now drag and drop the priorities into the location you want them.
+This is a nice enhancement upgrade from the mind-numbing 
+	click -> [move up], click -> [move up], click -> [move up] .. etc   
+This will make the prioritizing effects by admins much easier and faster.
+
+*other new stuff* 
+The project name in the drop downs is now sorted by name desc.
+On the 'Overview' tab, the user logging in will now have his 
+project details loaded
+Overview menu now supports the exporting of data in XML and HTML format.
+
+**On the chopping block for 1.3.3
+Adding the 'Hide'/'Show Hidden' function to project lists. These will replace
+the [Move Up] and [Move Down] buttons
+
+
+
+
+---------------- DEFAULT NEW INSTALL INFORMATION ----------------------
+New Install:
+This program is developed under the rule of -keep it simple-
+All of the SQL statements are external of the application
+so that different TO_DATE/DATETIME/DATE_FORMAT commands can
+be massaged and used on any database.  It would be nice if 
+we could get a standard, accepted, DATE manipulation command.
+
+PRIOR to using. A database will need to be established. Once
+that is done, open ./conf/config.xml and put in the goodies
+for the <database> xml section.
+Here are a few examples for different databases:
+MySql:
+          <driver>com.mysql.jdbc.Driver</driver>
+          <url>jdbc:mysql://DBServer/titrationDB</url>
+Oracle:
+          <driver>oracle.jdbc.OracleDriver</driver>
+          <url>jdbc:oracle:thin:@DBServer:1521:titrationDB</url>
+HSQLDB:
+          <driver>org.hsql.jdbcDriver</driver>
+          <url>jdbc:HypersonicSQL:hsql://DBServer</url>
+SQLServer:
+          <driver>com.microsoft.jdbc.sqlserver.SQLServerDriver</driver>
+          <url>jdbc:microsoft:sqlserver://DBServer:1433;DatabaseName=titrationDB</url>
+          
+There are two ways for Titration to find the appropriate library (jar file).
+	1) Put it in the classpath prior to running
+	2) Simply drop it in the $TITRATION_HOME/lib folder. The application
+	   has a built in classloader that will find any .jar or .zip files
+	
+******************** IMPORTANT ********************
+Once you have this done run the command: java -jar titration.jar -initdb
+This will build your database.  If you're going to be using any high-
+performance database you can go into ./conf/initdb.sql and change all
+of your VARCHAR to VARCHAR2.  
+***************************************************
+
+**Please take note MYSQL is CASE SENSITIVE so if you change some of the tables
+make sure you update them in ./conf/config.xml. 
+
+Once you have this done you can simply double click the jar or run java -jar titration.jar
+
+Building the project:
+I have written the code so it's compatible with 1.4.2 or greater JDK (it -might- run on 
+any platform).  The JBuilder project is included in the source release as well as a
+standard ant script.  If your running windows make sure you use ant -f windows.build.xml
+for build.xml is a sysV (Linux) directory structure release.
+The ant file is designed to base all paths of the ROOT.DIR property. Simply change that
+and you will be good to go.
